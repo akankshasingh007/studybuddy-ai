@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% block title %}{{ mode|title }} — StudyBuddy AI{% endblock %}
+{% block content %}
+
+<div class="page-shell {% if mode == 'chat' %}chat-page-shell{% endif %}">
+    {% if not user.is_authenticated %}
+    <div class="alert alert-info">
+        Guest mode: results are temporary. <a href="{% url 'register' %}">Create an account</a> to save notes and history.
+    </div>
+    {% endif %}
+
+    {% if mode == 'chat' %}
+    <div class="chat-shell">
+        <aside class="chat-list-panel">
+            <form method="post" enctype="multipart/form-data" class="source-stack">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="chat">
+                <button type="submit" name="action" value="clear" class="btn btn-primary full-width">+ New Chat</button>
+                <label class="form-label" for="chat_pdf">Upload PDF/Text</label>
+                <input type="file" name="pdf" id="chat_pdf" accept=".pdf,.txt,.md" class="form-control">
+                <button type="submit" name="action" value="upload" class="btn btn-outline full-width">Upload and Load</button>
+            </form>
+
+            <form method="post" class="source-stack">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="chat">
+                <label class="form-label" for="chat_written_title">Write Note</label>
+                <input type="text" name="written_title" id="chat_written_title" class="form-control" placeholder="Note title">
+                <textarea name="written_content" class="form-control" rows="5" placeholder="Paste or type notes..."></textarea>
+                {% if user.is_authenticated %}
+                <label class="check-row"><input type="checkbox" name="save_to_notes" checked> Save to Notes</label>
+                {% endif %}
+                <button type="submit" name="action" value="write" class="btn btn-outline full-width">Load Written Note</button>
+            </form>
+
+            {% if user.is_authenticated and saved_notes %}
+            <form method="post" class="source-stack">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="chat">
+                <label class="form-label" for="chat_note_id">Saved notes</label>
+                <select name="note_id" id="chat_note_id" class="form-control" required>
+                    {% for note in saved_notes %}
+                    <option value="{{ note.id }}">{{ note.title }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" name="action" value="load_note" class="btn btn-outline full-width">Load Note</button>
+            </form>
+            {% endif %}
+        </aside>
+
+        <section class="chat-main-panel">
+            {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+            {% if pdf_loaded %}
+            <form method="post" id="chatForm" class="chat-active-form">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="chat">
+                <div class="chat-window" id="chatWindow">
+                    {% if result %}
+                    <div class="chat-bubble user-bubble">{{ request.POST.question }}</div>
+                    <div class="chat-bubble ai-bubble">{{ result|safe }}</div>
+                    {% else %}
+                    <div class="empty-center">
+                        <div class="empty-line-icon">bot</div>
+                        <h3>Ask about {{ pdf_name }}</h3>
+                        <p>Your answer will be grounded in the selected notes.</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="chat-input-row">
+                    <input type="text" name="question" placeholder="Ask a question about your notes..." required autocomplete="off">
+                    <button type="submit" name="action" value="generate" class="chat-send-btn">Send</button>
+                </div>
+            </form>
+            {% else %}
+            <div class="empty-center">
+                <div class="empty-line-icon">bot</div>
+                <h3>AI Study Tutor</h3>
+                <p>Select a source or start a new one to ask questions about your study materials.</p>
+                <span class="btn btn-outline">Choose notes to begin</span>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+
+    {% else %}
+    <div class="page-header">
+        <h1 class="page-title gradient-title">
+            {% if mode == 'summary' %}Summaries{% elif mode == 'flashcards' %}Flashcards{% elif mode == 'quiz' %}Quizzes{% elif mode == 'explain' %}Explain{% else %}Study Tool{% endif %}
+        </h1>
+        <p class="page-subtitle">
+            {% if mode == 'summary' %}AI-generated condensed versions of your notes.
+            {% elif mode == 'flashcards' %}Study key terms and definitions.
+            {% elif mode == 'quiz' %}Test your understanding with multiple-choice questions.
+            {% elif mode == 'explain' %}Get simple explanations of complex concepts.
+            {% else %}Choose a note and generate a study mode.
+            {% endif %}
+        </p>
+    </div>
+
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+    <div class="tool-result-layout">
+        <aside class="source-panel">
+            <h3>Study Source</h3>
+            {% if pdf_loaded %}
+            <div class="pdf-loaded-badge">Loaded: <strong>{{ pdf_name }}</strong></div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="source-stack">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="{{ mode }}">
+                <label class="form-label" for="pdf">Upload PDF/Text</label>
+                <input type="file" name="pdf" id="pdf" accept=".pdf,.txt,.md" class="form-control">
+                {% if user.is_authenticated %}
+                <label class="check-row"><input type="checkbox" name="save_to_notes" checked> Save to Notes</label>
+                {% endif %}
+                <button type="submit" name="action" value="upload" class="btn btn-primary full-width">Upload and Load</button>
+            </form>
+
+            <form method="post" class="source-stack">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="{{ mode }}">
+                <label class="form-label" for="written_title">Write Note</label>
+                <input type="text" name="written_title" id="written_title" class="form-control" placeholder="Note title">
+                <textarea name="written_content" class="form-control" rows="6" placeholder="Paste or type notes..."></textarea>
+                {% if user.is_authenticated %}
+                <label class="check-row"><input type="checkbox" name="save_to_notes" checked> Save to Notes</label>
+                {% endif %}
+                <button type="submit" name="action" value="write" class="btn btn-outline full-width">Load Written Note</button>
+            </form>
+
+            {% if user.is_authenticated and saved_notes %}
+            <form method="post" class="source-stack">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="{{ mode }}">
+                <label class="form-label" for="note_id">Saved notes</label>
+                <select name="note_id" id="note_id" class="form-control" required>
+                    {% for note in saved_notes %}
+                    <option value="{{ note.id }}">{{ note.title }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" name="action" value="load_note" class="btn btn-outline full-width">Load Note</button>
+            </form>
+            {% endif %}
+        </aside>
+
+        <main class="tool-main-panel">
+            {% if pdf_loaded %}
+            <form method="post" class="generate-card">
+                {% csrf_token %}
+                <input type="hidden" name="mode" value="{{ mode }}">
+                <div>
+                    <h2>{{ mode|title }} from {{ pdf_name }}</h2>
+                    <p>Generate this mode from your selected study source.</p>
+                </div>
+                <button type="submit" name="action" value="generate" class="btn btn-primary">
+                    {% if mode == 'summary' %}Generate Summary{% elif mode == 'flashcards' %}Create Flashcards{% elif mode == 'quiz' %}Test Knowledge{% elif mode == 'explain' %}Explain{% else %}Generate{% endif %}
+                </button>
+            </form>
+            <div id="loader" style="display:none;" class="loader-box">Generating your {{ mode }}...</div>
+            {% if result %}
+            <div class="result-box">
+                <div class="result-header">
+                    <div class="result-title">{{ mode|title }} Result</div>
+                    <a href="{% url 'export_pdf' %}" class="btn btn-outline btn-sm">Export PDF</a>
+                </div>
+                {% if mode == 'flashcards' %}
+                <div id="fc-raw" style="display:none;">{{ result|safe }}</div>
+                <div id="fc-ui" class="result-content"></div>
+                {% elif mode == 'quiz' %}
+                <div id="quiz-raw" style="display:none;">{{ result|safe }}</div>
+                <div id="quiz-ui" class="result-content"></div>
+                {% else %}
+                <div class="result-content">{{ result|safe }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="empty-center tool-empty-center">
+                <div class="empty-line-icon">
+                    {% if mode == 'summary' %}book{% elif mode == 'flashcards' %}brain{% elif mode == 'quiz' %}cap{% else %}doc{% endif %}
+                </div>
+                <h3>Choose notes to begin</h3>
+                <p>Upload a file, write a note, or load one from your saved account library.</p>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign in for saved notes</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </main>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Spinner
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        if (e.submitter && e.submitter.value === 'generate') {
+            const loader = document.getElementById('loader');
+            if (loader) loader.style.display = 'block';
+        }
+        if (e.submitter && e.submitter.value === 'generate' && "{{ mode }}" === 'chat') {
+            const chatWindow = document.getElementById('chatWindow');
+            if (chatWindow) {
+                const q = form.querySelector('[name="question"]')?.value;
+                if (q) {
+                    const empty = chatWindow.querySelector('.empty-center');
+                    if (empty) empty.remove();
+                    const ub = document.createElement('div');
+                    ub.className = 'chat-bubble user-bubble';
+                    ub.textContent = q;
+                    chatWindow.appendChild(ub);
+                    const tb = document.createElement('div');
+                    tb.className = 'chat-bubble ai-bubble';
+                    tb.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+                    chatWindow.appendChild(tb);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
+            }
+        }
+    });
+});
+
+// ── Flashcards ──
+(function() {
+    const rawEl = document.getElementById('fc-raw');
+    const uiEl = document.getElementById('fc-ui');
+    if (!rawEl || !uiEl) return;
+
+    // Get ALL text content stripping HTML tags
+    const text = rawEl.innerText || rawEl.textContent;
+
+    // Try parsing CARD blocks
+    const cards = [];
+
+    // Method 1: CARD N pattern
+    const blocks = text.split(/CARD\s*\d+/i).filter(b => b.trim());
+    blocks.forEach(block => {
+        const frontMatch = block.match(/Front:\s*(.+?)(?=Back:|$)/is);
+        const backMatch = block.match(/Back:\s*([\s\S]+?)(?=CARD|Front:|$)/i);
+        if (frontMatch && backMatch) {
+            cards.push({
+                front: frontMatch[1].trim(),
+                back: backMatch[1].trim()
+            });
+        }
+    });
+
+    // Method 2: fallback — look for Front:/Back: pairs anywhere
+    if (!cards.length) {
+        const frontMatches = [...text.matchAll(/Front:\s*(.+)/gi)];
+        const backMatches = [...text.matchAll(/Back:\s*([\s\S]+?)(?=Front:|CARD|\n\n|$)/gi)];
+        const len = Math.min(frontMatches.length, backMatches.length);
+        for (let i = 0; i < len; i++) {
+            cards.push({
+                front: frontMatches[i][1].trim(),
+                back: backMatches[i][1].trim().split('\n')[0].trim()
+            });
+        }
+    }
+
+    if (!cards.length) {
+        // Show raw content if parsing failed
+        rawEl.style.display = 'block';
+        uiEl.style.display = 'none';
+        return;
+    }
+
+    let flipped = {};
+
+    function render() {
+        uiEl.innerHTML = `
+        <style>
+        .fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; padding: 0.5rem 0; }
+        .fc-scene { height: 200px; perspective: 1000px; cursor: pointer; }
+        .fc-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.4,0,0.2,1); }
+        .fc-scene.flipped .fc-inner { transform: rotateY(180deg); }
+        .fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; }
+        .fc-front { background: white; border: 2px solid #4f46e5; box-shadow: 0 4px 16px rgba(79,70,229,0.12); }
+        .fc-back { background: #4f46e5; color: white; transform: rotateY(180deg); box-shadow: 0 4px 16px rgba(79,70,229,0.25); }
+        .fc-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 800; margin-bottom: 0.75rem; opacity: 0.55; }
+        .fc-text { font-size: 0.9rem; line-height: 1.55; font-weight: 600; }
+        .fc-hint { font-size: 0.7rem; margin-top: 0.75rem; opacity: 0.4; }
+        .fc-count { text-align: center; color: #6b7280; font-size: 0.82rem; margin-top: 1rem; }
+        </style>
+        <div class="fc-grid">
+            ${cards.map((card, i) => `
+            <div class="fc-scene ${flipped[i] ? 'flipped' : ''}" data-i="${i}">
+                <div class="fc-inner">
+                    <div class="fc-front">
+                        <div class="fc-label">✦ Question</div>
+                        <div class="fc-text">${card.front}</div>
+                        <div class="fc-hint">Click to reveal answer</div>
+                    </div>
+                    <div class="fc-back">
+                        <div class="fc-label" style="opacity:0.6;">✦ Answer</div>
+                        <div class="fc-text">${card.back}</div>
+                    </div>
+                </div>
+            </div>`).join('')}
+        </div>
+        <div class="fc-count">${cards.length} cards · click any card to flip</div>`;
+
+        uiEl.querySelectorAll('.fc-scene').forEach(scene => {
+            scene.addEventListener('click', () => {
+                const i = parseInt(scene.dataset.i);
+                flipped[i] = !flipped[i];
+                scene.classList.toggle('flipped', !!flipped[i]);
+            });
+        });
+    }
+
+    render();
+})();
+
+// ── Quiz ──
+(function() {
+    const rawEl = document.getElementById('quiz-raw');
+    const uiEl = document.getElementById('quiz-ui');
+    if (!rawEl || !uiEl) return;
+
+    const text = rawEl.innerText || rawEl.textContent;
+
+    const questions = [];
+    const blocks = text.split(/Q\d+\./i).filter(b => b.trim());
+    blocks.forEach(block => {
+        const lines = block.trim().split('\n').map(l => l.trim()).filter(l => l);
+        const question = lines[0];
+        const options = lines.slice(1).filter(l => /^[A-D][).]\s/.test(l));
+        const ansLine = lines.find(l => /^answer\s*:/i.test(l));
+        const answer = ansLine?.replace(/^answer\s*:\s*/i, '').trim().charAt(0).toUpperCase();
+        if (question && options.length >= 2 && answer) {
+            questions.push({ question, options, answer });
+        }
+    });
+
+    if (!questions.length) { rawEl.style.display = 'block'; return; }
+
+    let selected = {};
+    let submitted = false;
+
+    function render() {
+        const score = submitted
+            ? questions.filter((q, i) => selected[i]?.charAt(0).toUpperCase() === q.answer).length
+            : 0;
+
+        let html = `
+        <style>
+        .quiz-list { display: flex; flex-direction: column; gap: 1.25rem; }
+        .quiz-qcard { background: white; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; transition: border-color 0.2s; }
+        .quiz-qcard.q-correct { border-color: #22c55e; background: #f0fdf4; }
+        .quiz-qcard.q-wrong { border-color: #ef4444; background: #fef2f2; }
+        .quiz-qnum { font-size: 0.72rem; color: #4f46e5; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+        .quiz-qtext { font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 1.1rem; line-height: 1.5; }
+        .quiz-opts { display: flex; flex-direction: column; gap: 0.5rem; }
+        .quiz-opt {
+            padding: 0.7rem 1rem; border: 1.5px solid #e5e7eb; border-radius: 8px;
+            cursor: pointer; font-size: 0.9rem; font-family: Inter,sans-serif;
+            text-align: left; background: white; color: #374151;
+            transition: all 0.15s; font-weight: 500; width: 100%;
+        }
+        .quiz-opt:hover:not([disabled]) { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; }
+        .quiz-opt.opt-selected { border-color: #4f46e5; background: #4f46e5; color: white; font-weight: 700; }
+        .quiz-opt.opt-correct { border-color: #22c55e !important; background: #22c55e !important; color: white !important; font-weight: 700; }
+        .quiz-opt.opt-wrong { border-color: #ef4444 !important; background: #fef2f2 !important; color: #991b1b !important; }
+        .quiz-opt:disabled { cursor: default; }
+        .quiz-score { text-align: center; padding: 2.5rem; border: 1.5px solid #e5e7eb; border-radius: 14px; background: white; margin-top: 1.5rem; }
+        .quiz-score-emoji { font-size: 3rem; margin-bottom: 0.5rem; }
+        .quiz-score-num { font-size: 3rem; font-weight: 800; color: #4f46e5; line-height: 1; }
+        .quiz-score-label { color: #6b7280; font-size: 0.95rem; margin-top: 0.5rem; margin-bottom: 1.5rem; }
+        .quiz-submit { display: block; margin: 1.5rem auto 0; padding: 0.75rem 2.5rem; background: #4f46e5; color: white; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; font-family: Inter,sans-serif; cursor: pointer; }
+        .quiz-submit:hover { background: #4338ca; }
+        .quiz-retry { padding: 0.6rem 1.5rem; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 700; font-family: Inter,sans-serif; cursor: pointer; font-size: 0.88rem; }
+        </style>
+        <div class="quiz-list">`;
+
+        questions.forEach((q, i) => {
+            const isCorrect = submitted && selected[i]?.charAt(0).toUpperCase() === q.answer;
+            const isWrong = submitted && selected[i] && !isCorrect;
+            html += `
+            <div class="quiz-qcard ${submitted ? (isCorrect ? 'q-correct' : isWrong ? 'q-wrong' : '') : ''}">
+                <div class="quiz-qnum">Question ${i + 1}</div>
+                <div class="quiz-qtext">${q.question}</div>
+                <div class="quiz-opts">
+                    ${q.options.map(opt => {
+                        const letter = opt.charAt(0).toUpperCase();
+                        let cls = 'quiz-opt';
+                        if (!submitted && selected[i] === opt) cls += ' opt-selected';
+                        if (submitted && letter === q.answer) cls += ' opt-correct';
+                        else if (submitted && selected[i] === opt) cls += ' opt-wrong';
+                        return `<button class="${cls}" data-q="${i}" data-opt="${opt}" ${submitted ? 'disabled' : ''}>${opt}</button>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        });
+
+        html += '</div>';
+
+        if (!submitted) {
+            html += `<button class="quiz-submit" id="submit-quiz">Submit Answers</button>`;
+        } else {
+            const emoji = score === questions.length ? '🏆' : score >= questions.length / 2 ? '✅' : '📚';
+            const msg = score === questions.length ? 'Perfect score! Excellent work.' : score >= questions.length / 2 ? 'Good job! Keep going.' : 'Keep studying and try again.';
+            html += `
+            <div class="quiz-score">
+                <div class="quiz-score-emoji">${emoji}</div>
+                <div class="quiz-score-num">${score}/${questions.length}</div>
+                <div class="quiz-score-label">${msg}</div>
+                <button class="quiz-retry" onclick="location.reload()">Try Again</button>
+            </div>`;
+        }
+
+        uiEl.innerHTML = html;
+
+        uiEl.querySelectorAll('.quiz-opt:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', () => {
+                selected[parseInt(btn.dataset.q)] = btn.dataset.opt;
+                render();
+            });
+        });
+
+        const sub = document.getElementById('submit-quiz');
+        if (sub) sub.addEventListener('click', () => { submitted = true; render(); });
+    }
+
+    render();
+})();
+</script>
+
+{% endblock %}

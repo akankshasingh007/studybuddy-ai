@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Add Note - StudyBuddy{% endblock %}
+{% block content %}
+
+<a href="{% url 'notes' %}" class="back-link">Back to Notes</a>
+
+<div class="page-header">
+    <h1 class="page-title">Add Note</h1>
+    <p class="page-subtitle">Save uploaded notes or write your own. Anything saved here can be used in all AI modes.</p>
+</div>
+
+<div class="card note-form-card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="alert alert-error">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-group">
+            <label class="form-label" for="id_title">Title *</label>
+            <input type="text" name="title" id="id_title" class="form-control" placeholder="Chapter 5 - Neural Networks" value="{{ form.title.value|default_if_none:'' }}" required>
+            {{ form.title.errors }}
+        </div>
+
+        <div class="dual-note-input">
+            <div class="note-input-panel">
+                <h3>Upload Notes</h3>
+                <p>PDF, TXT, and Markdown files are supported.</p>
+                <input type="file" name="file" id="id_file" accept=".pdf,.txt,.md" class="form-control">
+                {{ form.file.errors }}
+            </div>
+
+            <div class="note-input-panel">
+                <h3>Write Notes</h3>
+                <p>Paste or type notes for quick studying.</p>
+                <textarea name="content" id="id_content" class="form-control" rows="12" placeholder="Paste or type your study notes here...">{{ form.content.value|default_if_none:'' }}</textarea>
+                {{ form.content.errors }}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save to My Notes</button>
+            <a href="{% url 'notes' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

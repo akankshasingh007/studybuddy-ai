@@ -1,0 +1,8 @@
+Django
+mysqlclient
+PyMySQL
+python-dotenv
+google-genai
+pdfplumber
+Markdown
+xhtml2pdf

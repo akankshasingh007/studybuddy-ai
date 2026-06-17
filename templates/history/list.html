@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}History - StudyBuddy{% endblock %}
+{% block content %}
+
+<div class="page-shell">
+    <div class="page-actions">
+        <div>
+            <h1 class="page-title gradient-title">Study History</h1>
+            <p class="page-subtitle">Review your saved AI study sessions.</p>
+        </div>
+        <a href="{% url 'ai_tool' %}" class="btn btn-primary">+ New Session</a>
+    </div>
+
+    <div class="card" style="padding:0;">
+    {% if sessions %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Mode</th>
+                <th>Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for s in sessions %}
+        <tr>
+            <td style="font-weight:700;">{{ s.title }}</td>
+            <td><span class="badge">{{ s.mode }}</span></td>
+            <td style="color:var(--muted);">{{ s.created_at|date:"d M Y, H:i" }}</td>
+            <td><a href="{% url 'session_detail' s.pk %}">View</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-center history-empty">
+        <div class="empty-line-icon">book</div>
+        <h3>No history yet</h3>
+        <p>Your saved study sessions will appear here.</p>
+        <a href="{% url 'ai_tool' %}" class="btn btn-primary">Start studying</a>
+    </div>
+    {% endif %}
+    </div>
+</div>
+
+{% endblock %}

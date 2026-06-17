@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Study Plan - StudyBuddy{% endblock %}
+{% block content %}
+
+<div class="page-shell">
+    <div class="page-actions">
+        <div>
+            <h1 class="page-title gradient-title">Study Plan</h1>
+            <p class="page-subtitle">A personalized 7-day schedule built from your notes and quiz performance.</p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Generate Plan</button>
+        </form>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if plan %}
+    <div class="result-box">
+        <div class="result-header">
+            <div class="result-title">Your 7-Day Study Plan</div>
+        </div>
+        <div class="result-content">{{ plan|safe }}</div>
+    </div>
+    {% else %}
+    <section class="empty-panel study-plan-panel">
+        <div class="empty-center">
+            <div class="empty-round-icon">cal</div>
+            <h3>No study plan yet</h3>
+            <p>Click <strong>Generate Plan</strong> and Gemini will analyze your notes, quiz<br>scores, and weak spots to create a personalized week-long<br>schedule.</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Generate Plan</button>
+            </form>
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+{% endblock %}

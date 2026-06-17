@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - StudyBuddy{% endblock %}
+{% block content %}
+
+<div class="page-shell dashboard-shell">
+    <div class="page-header">
+        <h1 class="page-title dark-title">Study Dashboard</h1>
+        <p class="page-subtitle">Welcome back. Here's your learning progress.</p>
+    </div>
+
+    <section class="streak-card">
+        <div class="streak-top">
+            <div class="streak-left">
+                <div class="streak-icon">S</div>
+                <div>
+                    <div class="streak-inline"><span>{{ stats.streak }}</span> days streak</div>
+                    <p>Study today to start a streak!</p>
+                </div>
+            </div>
+            <div class="streak-metrics">
+                <div>
+                    <strong>{{ stats.longest_streak }}</strong>
+                    <span>Longest streak</span>
+                </div>
+                <div class="metric-divider"></div>
+                <div>
+                    <strong class="orange">{{ stats.active_days }}</strong>
+                    <span>Active days (30d)</span>
+                </div>
+            </div>
+        </div>
+        <div class="streak-progress-row">
+            <span>Last 30 days</span>
+            <span>{{ stats.active_days }} / 30 days active</span>
+        </div>
+        <div class="streak-progress"><div style="width: {{ stats.active_percent }}%;"></div></div>
+    </section>
+
+    <section class="quick-actions">
+        <a href="{% url 'create_note' %}" class="quick-card">
+            <span class="quick-icon">+</span>
+            <strong>Write Note</strong>
+            <small>Save typed notes to your library</small>
+        </a>
+        <a href="{% url 'create_note' %}" class="quick-card">
+            <span class="quick-icon">up</span>
+            <strong>Upload PDF/Text</strong>
+            <small>Extract study material into notes</small>
+        </a>
+        <a href="{% url 'ai_tool' %}?mode=summary" class="quick-card">
+            <span class="quick-icon">book</span>
+            <strong>Generate Summary</strong>
+            <small>Use a saved note or temporary source</small>
+        </a>
+        <a href="{% url 'study_plan' %}" class="quick-card">
+            <span class="quick-icon">cal</span>
+            <strong>Build Study Plan</strong>
+            <small>Create a 7-day AI schedule</small>
+        </a>
+    </section>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Total Notes</div>
+                <div class="stat-num">{{ stats.notes_count }}</div>
+            </div>
+            <div class="stat-icon">doc</div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Summaries</div>
+                <div class="stat-num">{{ stats.summaries }}</div>
+            </div>
+            <div class="stat-icon">book</div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Flashcard Sets</div>
+                <div class="stat-num">{{ stats.flashcards }}</div>
+            </div>
+            <div class="stat-icon">brain</div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Quizzes</div>
+                <div class="stat-num">{{ stats.quizzes }}</div>
+            </div>
+            <div class="stat-icon">cap</div>
+        </div>
+    </section>
+
+    <section class="activity-section">
+        <h2 class="section-title"><span class="title-icon">clock</span> Recent Activity</h2>
+        <div class="empty-panel activity-panel">
+            {% if stats.recent %}
+            <table class="data-table">
+                <thead>
+                    <tr><th>Title</th><th>Mode</th><th>Date</th><th></th></tr>
+                </thead>
+                <tbody>
+                {% for s in stats.recent %}
+                <tr>
+                    <td>{{ s.title }}</td>
+                    <td><span class="badge">{{ s.mode }}</span></td>
+                    <td>{{ s.created_at|date:"d M Y" }}</td>
+                    <td><a href="{% url 'session_detail' s.pk %}">View</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-center">
+                <div class="empty-line-icon">spark</div>
+                <h3>No activity yet</h3>
+                <p>Upload a note to get started!</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+{% endblock %}

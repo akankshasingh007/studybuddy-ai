@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StudyBuddy AI{% endblock %}</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+{% block body %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <a href="{% url 'home' %}" class="sidebar-logo-link">
+            <div class="sidebar-logo">
+                <span class="sidebar-logo-icon">📚</span>
+                <span class="sidebar-logo-text">StudyBuddy</span>
+            </div>
+        </a>
+        <nav class="sidebar-nav">
+            {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <span class="nav-icon">⊞</span> Dashboard
+            </a>
+            {% endif %}
+            <a href="{% url 'notes' %}" class="nav-item {% if request.resolver_match.url_name == 'notes' or request.resolver_match.url_name == 'create_note' %}active{% endif %}">
+                <span class="nav-icon">📄</span> Notes
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'history' %}" class="nav-item {% if request.resolver_match.url_name == 'history' or request.resolver_match.url_name == 'session_detail' %}active{% endif %}">
+                <span class="nav-icon">🕐</span> History
+            </a>
+            {% endif %}
+            <a href="{% url 'ai_tool' %}?mode=summary" class="nav-item {% if request.resolver_match.url_name == 'ai_tool' and request.GET.mode == 'summary' %}active{% endif %}">
+                <span class="nav-icon">📖</span> Summaries
+            </a>
+            <a href="{% url 'ai_tool' %}?mode=flashcards" class="nav-item {% if request.resolver_match.url_name == 'ai_tool' and request.GET.mode == 'flashcards' %}active{% endif %}">
+                <span class="nav-icon">🃏</span> Flashcards
+            </a>
+            <a href="{% url 'ai_tool' %}?mode=quiz" class="nav-item {% if request.resolver_match.url_name == 'ai_tool' and request.GET.mode == 'quiz' %}active{% endif %}">
+                <span class="nav-icon">🎓</span> Quizzes
+            </a>
+            <a href="{% url 'study_plan' %}" class="nav-item {% if request.resolver_match.url_name == 'study_plan' %}active{% endif %}">
+                <span class="nav-icon">📅</span> Study Plan
+            </a>
+            <a href="{% url 'ai_tool' %}?mode=chat" class="nav-item {% if request.resolver_match.url_name == 'ai_tool' and request.GET.mode == 'chat' %}active{% endif %}">
+                <span class="nav-icon">🤖</span> AI Tutor
+            </a>
+        </nav>
+        <div class="sidebar-bottom">
+            {% if user.is_authenticated %}
+            <div class="nav-user">👤 {{ user.username }}</div>
+            <a href="{% url 'logout' %}" class="sidebar-auth-btn">→ Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="sidebar-auth-btn">→ Sign in</a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <main class="main-content">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</div>
+{% endblock %}
+</body>
+</html>

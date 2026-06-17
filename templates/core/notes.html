@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Notes — StudyBuddy{% endblock %}
+{% block content %}
+
+<div class="page-actions">
+    <div class="page-header">
+        <h1 class="page-title">My Notes</h1>
+        <p class="page-subtitle">Upload or write notes to start studying.</p>
+    </div>
+    <div class="header-actions">
+        <a href="{% url 'ai_tool' %}" class="btn btn-outline">＋ Write Note</a>
+        <a href="{% url 'ai_tool' %}" class="btn btn-primary">⬆ Upload PDF/Text</a>
+    </div>
+</div>
+
+<div class="large-empty-panel">
+    <div class="empty-icon">📄</div>
+    <div class="empty-title">No notes yet</div>
+    <div class="empty-desc">Upload a PDF or write a text note to start generating<br>summaries, flashcards, and quizzes.</div>
+</div>
+
+{% endblock %}

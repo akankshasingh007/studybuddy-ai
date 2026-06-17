@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBuddy AI — Study Smarter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body style="margin:0; font-family:Inter,sans-serif; background:#f8f9fc;">
+
+<!-- Navbar -->
+<nav style="background:white; border-bottom:1px solid #e5e7eb; padding:0 2rem; height:64px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100;">
+    <a href="{% url 'home' %}" style="font-size:1.1rem; font-weight:800; color:#4f46e5; text-decoration:none;">📚 StudyBuddy</a>
+    <div style="display:flex; gap:1rem; align-items:center;">
+        <a href="{% url 'ai_tool' %}" style="color:#6b7280; font-weight:600; font-size:0.9rem; text-decoration:none;">Try Free</a>
+        <a href="{% url 'login' %}" style="color:#6b7280; font-weight:600; font-size:0.9rem; text-decoration:none;">Sign In</a>
+        <a href="{% url 'register' %}" style="background:#4f46e5; color:white; padding:0.5rem 1.25rem; border-radius:8px; font-weight:700; font-size:0.9rem; text-decoration:none;">Get Started Free</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section style="max-width:900px; margin:0 auto; padding:5rem 2rem 3rem; text-align:center;">
+    <div style="display:inline-block; background:#eef2ff; border:1px solid #c7d2fe; border-radius:100px; padding:0.35rem 1rem; color:#4f46e5; font-size:0.75rem; font-weight:700; letter-spacing:0.1em; margin-bottom:1.5rem;">
+        ✦ AI-POWERED STUDY TOOL
+    </div>
+    <h1 style="font-size:clamp(2.5rem,6vw,4rem); font-weight:800; line-height:1.1; color:#111827; margin:0 0 1.25rem;">
+        Study Smarter,<br>Not Harder.
+    </h1>
+    <p style="font-size:1.15rem; color:#6b7280; line-height:1.7; max-width:520px; margin:0 auto 2.5rem;">
+        Upload any PDF and get instant summaries, flashcards, quizzes, and AI-powered answers — all in seconds.
+    </p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-bottom:4rem;">
+        <a href="{% url 'ai_tool' %}" style="background:#4f46e5; color:white; padding:0.85rem 2rem; border-radius:10px; font-weight:700; font-size:1rem; text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem;">⚡ Try Now — It's Free</a>
+        <a href="{% url 'register' %}" style="background:white; color:#111827; padding:0.85rem 2rem; border-radius:10px; font-weight:700; font-size:1rem; text-decoration:none; border:1.5px solid #e5e7eb; display:inline-flex; align-items:center;">Create Account</a>
+    </div>
+</section>
+
+<!-- Features -->
+<section style="max-width:960px; margin:0 auto; padding:0 2rem 4rem;">
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem;">
+        <a href="{% url 'ai_tool' %}?mode=summary" style="text-decoration:none; background:white; border:1.5px solid #e5e7eb; border-radius:16px; padding:1.75rem 1.5rem; transition:border-color 0.2s; display:block;" onmouseover="this.style.borderColor='#4f46e5'" onmouseout="this.style.borderColor='#e5e7eb'">
+            <div style="font-size:2rem; margin-bottom:0.75rem;">📝</div>
+            <h3 style="margin:0 0 0.5rem; font-size:1rem; font-weight:700; color:#111827;">Summarize</h3>
+            <p style="margin:0 0 1rem; color:#6b7280; font-size:0.85rem; line-height:1.5;">Turn pages of notes into clean bullet points instantly.</p>
+            <span style="color:#4f46e5; font-size:0.82rem; font-weight:700;">Try it →</span>
+        </a>
+        <a href="{% url 'ai_tool' %}?mode=flashcards" style="text-decoration:none; background:white; border:1.5px solid #e5e7eb; border-radius:16px; padding:1.75rem 1.5rem; display:block;" onmouseover="this.style.borderColor='#4f46e5'" onmouseout="this.style.borderColor='#e5e7eb'">
+            <div style="font-size:2rem; margin-bottom:0.75rem;">🃏</div>
+            <h3 style="margin:0 0 0.5rem; font-size:1rem; font-weight:700; color:#111827;">Flashcards</h3>
+            <p style="margin:0 0 1rem; color:#6b7280; font-size:0.85rem; line-height:1.5;">Auto-generate flip cards for active recall.</p>
+            <span style="color:#4f46e5; font-size:0.82rem; font-weight:700;">Try it →</span>
+        </a>
+        <a href="{% url 'ai_tool' %}?mode=quiz" style="text-decoration:none; background:white; border:1.5px solid #e5e7eb; border-radius:16px; padding:1.75rem 1.5rem; display:block;" onmouseover="this.style.borderColor='#4f46e5'" onmouseout="this.style.borderColor='#e5e7eb'">
+            <div style="font-size:2rem; margin-bottom:0.75rem;">🎓</div>
+            <h3 style="margin:0 0 0.5rem; font-size:1rem; font-weight:700; color:#111827;">Quiz</h3>
+            <p style="margin:0 0 1rem; color:#6b7280; font-size:0.85rem; line-height:1.5;">Test yourself with AI-generated MCQs from your notes.</p>
+            <span style="color:#4f46e5; font-size:0.82rem; font-weight:700;">Try it →</span>
+        </a>
+        <a href="{% url 'ai_tool' %}?mode=chat" style="text-decoration:none; background:white; border:1.5px solid #e5e7eb; border-radius:16px; padding:1.75rem 1.5rem; display:block;" onmouseover="this.style.borderColor='#4f46e5'" onmouseout="this.style.borderColor='#e5e7eb'">
+            <div style="font-size:2rem; margin-bottom:0.75rem;">🤖</div>
+            <h3 style="margin:0 0 0.5rem; font-size:1rem; font-weight:700; color:#111827;">AI Tutor</h3>
+            <p style="margin:0 0 1rem; color:#6b7280; font-size:0.85rem; line-height:1.5;">Ask anything about your uploaded notes and get answers.</p>
+            <span style="color:#4f46e5; font-size:0.82rem; font-weight:700;">Try it →</span>
+        </a>
+    </div>
+</section>
+
+<!-- How it works -->
+<section style="background:white; border-top:1px solid #e5e7eb; border-bottom:1px solid #e5e7eb; padding:4rem 2rem;">
+    <div style="max-width:800px; margin:0 auto; text-align:center;">
+        <h2 style="font-size:2rem; font-weight:800; color:#111827; margin:0 0 3rem;">How it works</h2>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:2rem;">
+            <div>
+                <div style="font-size:2rem; font-weight:800; color:#e5e7eb; margin-bottom:1rem;">01</div>
+                <h4 style="margin:0 0 0.5rem; font-weight:700; color:#111827;">Upload your PDF</h4>
+                <p style="margin:0; color:#6b7280; font-size:0.88rem;">Any textbook, lecture notes, or research paper.</p>
+            </div>
+            <div>
+                <div style="font-size:2rem; font-weight:800; color:#e5e7eb; margin-bottom:1rem;">02</div>
+                <h4 style="margin:0 0 0.5rem; font-weight:700; color:#111827;">Choose a mode</h4>
+                <p style="margin:0; color:#6b7280; font-size:0.88rem;">Summarize, quiz, flashcards, or chat.</p>
+            </div>
+            <div>
+                <div style="font-size:2rem; font-weight:800; color:#e5e7eb; margin-bottom:1rem;">03</div>
+                <h4 style="margin:0 0 0.5rem; font-weight:700; color:#111827;">Get instant results</h4>
+                <p style="margin:0; color:#6b7280; font-size:0.88rem;">AI processes your notes in seconds.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section style="max-width:700px; margin:4rem auto; padding:0 2rem; text-align:center;">
+    <h2 style="font-size:2rem; font-weight:800; color:#111827; margin:0 0 0.75rem;">Start studying smarter today</h2>
+    <p style="color:#6b7280; margin:0 0 2rem; font-size:1rem;">Free forever. No credit card required.</p>
+    <a href="{% url 'register' %}" style="background:#4f46e5; color:white; padding:0.9rem 2.5rem; border-radius:10px; font-weight:700; font-size:1rem; text-decoration:none; display:inline-block;">Get Started Free →</a>
+</section>
+
+</body>
+</html>

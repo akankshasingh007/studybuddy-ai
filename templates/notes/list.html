@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Notes - StudyBuddy{% endblock %}
+{% block content %}
+
+<div class="page-shell">
+    <div class="page-actions">
+        <div>
+            <h1 class="page-title gradient-title">My Notes</h1>
+            <p class="page-subtitle">Upload or write notes to start studying.</p>
+        </div>
+        <div class="top-actions">
+            <a href="{% url 'create_note' %}" class="btn btn-outline">+ Write Note</a>
+            <a href="{% url 'create_note' %}" class="btn btn-primary">Upload PDF/Text</a>
+        </div>
+    </div>
+
+    {% if uploaded_notes or created_notes %}
+    <section class="notes-section">
+        {% if uploaded_notes %}
+        <div class="section-heading">
+            <h2>Uploaded Notes</h2>
+            <span>{{ uploaded_notes|length }} saved</span>
+        </div>
+        <div class="notes-grid">
+            {% for note in uploaded_notes %}
+            <article class="note-card">
+                <div class="note-card-header">
+                    <div class="note-icon">doc</div>
+                    <div class="note-meta">
+                        <div class="note-title">{{ note.title }}</div>
+                        <div class="note-date">{{ note.created_at|date:"d M Y" }} - {{ note.source_label }}</div>
+                    </div>
+                    <form method="post" action="{% url 'delete_note' note.pk %}" class="note-delete-form">
+                        {% csrf_token %}
+                        <button type="submit" class="note-delete-btn" onclick="return confirm('Delete this note?')">Delete</button>
+                    </form>
+                </div>
+                <div class="note-preview">{{ note.preview }}</div>
+                <div class="note-actions">
+                    <a href="{% url 'use_note' note.pk %}?mode=summary" class="note-mode-btn">Use for Summary</a>
+                    <a href="{% url 'use_note' note.pk %}?mode=flashcards" class="note-mode-btn">Use for Flashcards</a>
+                    <a href="{% url 'use_note' note.pk %}?mode=quiz" class="note-mode-btn">Use for Quiz</a>
+                    <a href="{% url 'use_note' note.pk %}?mode=chat" class="note-mode-btn">Use for AI Tutor</a>
+                    <a href="{% url 'use_note' note.pk %}?mode=explain" class="note-mode-btn">Use for Explain</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if created_notes %}
+        <div class="section-heading">
+            <h2>Written Notes</h2>
+            <span>{{ created_notes|length }} saved</span>
+        </div>
+        <div class="notes-grid">
+            {% for note in created_notes %}
+            <article class="note-card">
+                <div class="note-card-header">
+                    <div class="note-icon">txt</div>
+                    <div class="note-meta">
+                        <div class="note-title">{{ note.title }}</div>
+                        <div class="note-date">{{ note.created_at|date:"d M Y" }} - {{ note.source_label }}</div>
+                    </div>
+                    <form method="post" action="{% url 'delete_note' note.pk %}" class="note-delete-form">
+                        {% csrf_token %}
+                        <button type="submit" class="note-delete-btn" onclick="return confirm('Delete this note?')">Delete</button>
+                    </form>
+                </div>
+                <div class="note-preview">{{ note.preview }}</div>
+                <div class="note-actions">
+                    <a href="{% url 'use_note' note.pk %}?mode=summary" class="note-mode-btn">Use for Summary</a>
+                    <a href="{% url 'use_note' note.pk %}?mode=flashcards" class="note-mode-btn">Use for Flashcards</a>
+                    <a href="{% url 'use_note' note.pk %}?mode=quiz" class="note-mode-btn">Use for Quiz</a>
+                    <a href="{% url 'use_note' note.pk %}?mode=chat" class="note-mode-btn">Use for AI Tutor</a>
+                    <a href="{% url 'use_note' note.pk %}?mode=explain" class="note-mode-btn">Use for Explain</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+    {% else %}
+    <section class="empty-panel notes-empty-panel">
+        <div class="empty-center">
+            <div class="empty-line-icon">doc</div>
+            <h3>No notes yet</h3>
+            <p>Upload a PDF or write a text note to start generating<br>summaries, flashcards, and quizzes.</p>
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+{% endblock %}
