@@ -128,9 +128,9 @@ Open `http://127.0.0.1:8000/`.
 6. **Download**: Export results as PDF with one click
 
 ---
-## 📖 Study Modes Explained
+##  Study Modes Explained
 
-### 1. Summary Mode 📖
+### 1. Summary Mode 
 
 Condense long PDFs into structured bullet-point summaries.
 
@@ -142,7 +142,7 @@ Condense long PDFs into structured bullet-point summaries.
 
 **Perfect for:** Textbooks, research papers, lecture notes
 
-### 2. Flashcards Mode 🃏
+### 2. Flashcards Mode 
 
 Auto-generate interactive flip cards for spaced repetition learning.
 
@@ -155,7 +155,7 @@ Auto-generate interactive flip cards for spaced repetition learning.
 
 **Perfect for:** Vocabulary, definitions, key concepts
 
-### 3. Quiz Mode 🎓
+### 3. Quiz Mode 
 
 Test your knowledge with AI-generated multiple-choice questions.
 
@@ -168,7 +168,7 @@ Test your knowledge with AI-generated multiple-choice questions.
 
 **Perfect for:** Exam preparation, self-assessment, knowledge testing
 
-### 4. Explain Mode 💡
+### 4. Explain Mode 
 
 Get simple, clear explanations of complex topics from your notes.
 
@@ -180,7 +180,7 @@ Get simple, clear explanations of complex topics from your notes.
 
 **Perfect for:** Complex topics, difficult chapters, confusing concepts
 
-### 5. AI Tutor Mode 🤖
+### 5. AI Tutor Mode 
 
 Chat with your PDFs in real-time using natural language.
 
@@ -195,7 +195,7 @@ Chat with your PDFs in real-time using natural language.
 
 ---
 
-## 👤 Account Features
+##  Account Features
 
 ### Guest Mode (No Signup Required)
 
@@ -251,7 +251,7 @@ Once logged in, your dashboard shows:
 
 ---
 
-## 📱 Responsive Design
+##  Responsive Design
 
 StudyBuddy works on all devices:
 
