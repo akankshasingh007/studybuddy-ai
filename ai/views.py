@@ -105,7 +105,7 @@ def ai_tool(request):
                 else:
                     error = "Could not extract text from this note."
 
-        # Generate action
+    
         elif action == 'generate':
             mode = request.POST.get('mode', 'summary')
             question = request.POST.get('question', '')
@@ -123,7 +123,7 @@ def ai_tool(request):
                 request.session['last_mode'] = mode
                 request.session.modified = True
 
-                # Save to DB only if user is authenticated
+                
                 if request.user.is_authenticated and result and not result.startswith('Gemini error'):
                     pdf_name = request.session.get('pdf_name', 'Untitled')
                     session = ChatSession.objects.create(
@@ -137,7 +137,7 @@ def ai_tool(request):
                         ai_response=result,
                     )
 
-        # Clear PDF from session
+        
         elif action == 'clear':
             request.session.pop('extracted_text', None)
             request.session.pop('pdf_name', None)

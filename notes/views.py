@@ -56,7 +56,6 @@ def use_note(request, pk):
     if mode == 'tutor':
         mode = 'chat'
 
-    # Get text content
     text = note.content
     if not text and note.file:
         text, err = extract_text_from_study_file(note.file)
