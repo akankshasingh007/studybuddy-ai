@@ -6,3 +6,4 @@ google-genai
 pdfplumber
 Markdown
 xhtml2pdf
+gunicorn==21.2.0
